@@ -21,8 +21,7 @@ class Camera:
   def capture_image(self):
     temp_file_name = "tmp/image_%d.jpg" % int(time.time())
 
-    if not subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", temp_file_name]):
-      raise Exception("Could not call raspistill!")
+    subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", temp_file_name])
 
     if not os.path.exists(temp_file_name):
       raise Exception("Called raspistill but can't find output file!")
