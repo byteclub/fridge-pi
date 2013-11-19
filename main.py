@@ -10,12 +10,12 @@ class CameraImage:
     self.file_name = file_name
 
   def averageLightValue(self):
-    return int(cv2.mean(self.img_gray))
+    return int(cv2.mean(self.img_gray)[0])
 
   def blurrinessValue(self):
     img_lap = cv2.Laplacian(self.img_gray, cv.CV_16S, ksize=1, scale=1, delta=0)
     return int(cv2.reduce(cv2.reduce(img_lap, 0, cv.CV_REDUCE_MAX), 1, cv.CV_REDUCE_MAX)[0][0])
-    
+ 
 
 class Camera:
   def capture_image(self):
