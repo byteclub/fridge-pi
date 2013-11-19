@@ -18,7 +18,7 @@ class CameraImage:
     
 
 class Camera:
-  def captureImage(self):
+  def capture_image(self):
     temp_file_name = "tmp/image_%d.jpg" % int(time.time())
 
     if not subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", temp_file_name]):
@@ -29,8 +29,14 @@ class Camera:
 
     return CameraImage(temp_file_name)
 
+def setup_app():
+  if not os.path.exists("tmp"):
+    os.makedirs("tmp")
+
+# Main loop
+setup_app()
 cam = Camera()
-img = cam.captureImage()
+img = cam.capture_image()
 print "File: %s" % img.file_name
 print "Light: %d" % img.averageLightValue()
 print "Blur: %d" % img.blurrinessValue()
