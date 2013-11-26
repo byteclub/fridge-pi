@@ -1,41 +1,65 @@
-import cv2
-import cv
-import subprocess
+from env import Environment
 import time
-import os
+import Image from imgutils
 
-class CameraImage:
-  def __init__(self, file_name):
-    self.img_gray = cv2.imread(file_name, cv.CV_LOAD_IMAGE_GRAYSCALE)
-    self.file_name = file_name
 
-  def averageLightValue(self):
-    return int(cv2.mean(self.img_gray)[0])
+class Main:
+  def __init__(self, env):
+    self.env = env
 
-  def blurrinessValue(self):
-    img_lap = cv2.Laplacian(self.img_gray, cv.CV_16S, ksize=1, scale=1, delta=0)
-    return int(cv2.reduce(cv2.reduce(img_lap, 0, cv.CV_REDUCE_MAX), 1, cv.CV_REDUCE_MAX)[0][0])
- 
+  def main(self):
+    # Don't start taking pics until we are inside of an actual fridge
+    # which is presumably dark (or somebody is testing us)
+    self.wait_for_dark_image()
+    while(true):
+      images = self.get_best_images()
+      self.save_images(images)
 
-class Camera:
-  def capture_image(self):
-    temp_file_name = "tmp/image_%d.jpg" % int(time.time())
+  def wait_for_dark_image(self):
+    wait_for_image_that(imgutil.is_dark)
+    self.env.clean_up_temp_files
 
-    subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", temp_file_name])
+  def get_best_images(self):
+    file_name = wait_for_image_that(imgutil.is_not_dark)
+    best_img = Image(file_name)
+    start_time = time.time()
+    while(true):
+      next_img = self.env.capture_camera_image_into_temp_file()
+      if imgutil.is_dark(next_img)
+        break
+      if next_img.sharpness_value > best_img.sharpness_value
+        best_img = next_img
+      if seconds_elapsed_since(start_time) > 5*60
+        break
+    [best_img]
 
-    if not os.path.exists(temp_file_name):
-      raise Exception("Called raspistill but can't find output file!")
+  def save_images(self, images):
+    self.env.save_file_for_later(i.file_name) for i in images
+    self.env.cleanup_temp_files()
 
-    return CameraImage(temp_file_name)
+  def wait_for_image_that(meets_criteria):
+    while(true):
+      self.env.clean_up_temp_files
+      img = self.env.capture_camera_image_into_temp_file()
+      if meets_criteria(img)
+        return img.file_name
+      time.sleep(10)
 
-def setup_app():
-  if not os.path.exists("tmp"):
-    os.makedirs("tmp")
 
-# Main loop
-setup_app()
-cam = Camera()
-img = cam.capture_image()
-print "File: %s" % img.file_name
-print "Light: %d" % img.averageLightValue()
-print "Blur: %d" % img.blurrinessValue()
+def seconds_elapsed_since(timestamp):
+  time.time() - timestamp
+
+def quick_test():
+  env = Environment()
+
+  file_name = env.make_temp_file_name("jpg")
+  img = env.capture_camera_image_into(file_name)
+
+  print "File: %s" % img.file_name
+  print "Light: %d" % img.average_light_value
+  print "Blur: %d" % img.blurriness_value
+
+
+# Start it up
+if __name__=="__main__":
+   main()
