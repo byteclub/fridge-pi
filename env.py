@@ -1,31 +1,89 @@
+import time
 import os
 import shutil
+import os.path
 
 class Environment:
-  temp_dir = "tmp"
-  save_dir = "final_images"
+    temp_dir = "tmp"
+    save_dir = "final_images"
 
-  def __init__(self):
-    if not os.path.exists(self.temp_dir):
-      os.makedirs(self.temp_dir)
-    if not os.path.exists(self.save_dir):
-      os.makedirs(self.save_dir)
+    def __init__(self):
+        self.temp_file_counter = 0
 
-  def make_temp_file_name(self, extension):
-    return "%s/image_%d.%s" % (self.temp_dir, int(time.time()), extension)
+    def start(self):
+        if not os.path.exists(self.temp_dir):
+            os.makedirs(self.temp_dir)
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
 
-  def capture_camera_image_into(self, file_name):
-    subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", file_name])
-    if not os.path.exists(file_name):
-      raise Exception("Called raspistill but can't find output file [%s]!" % file_name)
-    return Image(file_name)
+    def make_temp_file_name(self, extension):
+        self.temp_file_counter += 1
+        return "%s/image_cnt%d_time%d.%s" % (self.temp_dir, self.temp_file_counter, int(time.time()), extension)
 
-  def capture_camera_image_into_temp_file(self, extension = "jpg"):
-    fn = make_temp_file_name(extension)
-    self.capture_camera_image_into(fn)
+    def capture_camera_image_into(self, file_name):
+        subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", file_name])
+        if not os.path.exists(file_name):
+            raise Exception("Called raspistill but can't find output file [%s]!" % file_name)
+        return file_name
 
-  def cleanup_temp_files(self):
-    os.remove(f) for f in os.listdir(temp_dir)
+    def capture_camera_image_into_temp_file(self, extension = "jpg"):
+        fn = self.make_temp_file_name(extension)
+        return self.capture_camera_image_into(fn)
 
-  def save_file_for_later(file_name):
-    shutil.move(file_name, save_dir)
+    def cleanup_temp_files(self):
+        for f in os.listdir(self.temp_dir):
+            os.remove("%s/%s" % (self.temp_dir, f))
+
+    def save_file_for_later(self, file_name):
+        shutil.move(file_name, self.save_dir)
+
+    def started_collecting_images(self):
+        return time.time()
+
+    def should_stop_collecting_images(self, started_when):
+        elapsed = time.time() - started_when
+        return elapsed > 5*60
+
+    def wait_between_camera_captures(self):
+        time.sleep(10)
+
+class TestEnvironment(Environment):
+    sharp_test_image = "img2_sharp.jpg"
+    test_images = [ "test_images/img0_dark.jpg",
+                    "test_images/img1_blurry.jpg",
+                    "test_images/%s" % sharp_test_image,
+                    "test_images/img3_blurry.jpg"]
+
+    def __init__(self):
+        Environment.__init__(self)
+        self.current_test_image_index = 0
+        self.test_file_names = {}
+
+    def start(self):
+        if os.path.exists(self.temp_dir):
+            shutil.rmtree(self.temp_dir)
+        if os.path.exists(self.save_dir):
+            shutil.rmtree(self.save_dir)
+        Environment.start(self)
+
+    def capture_camera_image_into(self, file_name):
+        if self.should_stop_collecting_images(0):
+            raise Exception("Ran out of test images!!!")
+        next_test_image = self.test_images[self.current_test_image_index]
+        self.test_file_names[os.path.basename(file_name)] = os.path.basename(next_test_image)
+        shutil.copy(next_test_image, file_name)
+        self.current_test_image_index = self.current_test_image_index + 1
+        print "DEBUG: 'captured' test image [%s] into file [%s]" % (next_test_image, file_name)
+        return file_name
+
+    def wait_between_camera_captures(self):
+        pass
+
+    def started_collecting_images(self):
+        pass
+
+    def should_stop_collecting_images(self, started_when):
+        return self.current_test_image_index >= len(self.test_images)
+
+    def original_test_file_name(self, file_name):
+        return self.test_file_names[os.path.basename(file_name)]
