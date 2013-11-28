@@ -35,6 +35,7 @@ class Environment:
             os.remove("%s/%s" % (self.temp_dir, f))
 
     def save_file_for_later(self, file_name):
+        shutil.copy(file_name, "/home/pi/public_html/fridge.jpg")
         shutil.move(file_name, self.save_dir)
 
     def started_collecting_images(self):
