@@ -46,7 +46,7 @@ class Environment:
         dest_path = "/home/pi/public_html/fridge-pi"
         if os.path.exists(dest_path):
             shutil.rmtree(dest_path)
-        shutil.copy(path, dest_path)
+        shutil.copytree(path, dest_path)
 
     def started_collecting_images(self):
         return time.time()
