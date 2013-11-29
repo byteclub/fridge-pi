@@ -55,7 +55,7 @@ def wait_for_image_that(meets_criteria):
         img = Image(env.capture_camera_image_into_temp_file())
         if meets_criteria(img):
             return img
-        env.wait_between_camera_captures()
+        env.wait_between_idle_camera_captures()
 
 def setup_simple_debug_console_logger():
     logger.setLevel(logging.DEBUG)
