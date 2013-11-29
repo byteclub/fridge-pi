@@ -1,8 +1,10 @@
 import main
 import env
 import os
+import logging
 
 e = env.TestEnvironment()
+main.setup_simple_debug_console_logger()
 main.main(e, main.do_not_loop_forever)
 
 final_files = os.listdir(e.save_dir)

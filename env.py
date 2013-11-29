@@ -35,8 +35,11 @@ class Environment:
             os.remove("%s/%s" % (self.temp_dir, f))
 
     def save_file_for_later(self, file_name):
-        shutil.copy(file_name, "/home/pi/public_html/fridge.jpg")
+        self.expose_file_via_webserver(file_name)
         shutil.move(file_name, self.save_dir)
+
+    def expose_file_via_webserver(self, file_name):
+        shutil.copy(file_name, "/home/pi/public_html/fridge.jpg")
 
     def started_collecting_images(self):
         return time.time()
@@ -45,15 +48,19 @@ class Environment:
         elapsed = time.time() - started_when
         return elapsed > 5*60
 
-    def wait_between_camera_captures(self):
+    def wait_between_idle_camera_captures(self):
         time.sleep(10)
+
+    def wait_between_active_camera_captures(self):
+        time.sleep(1)
 
 class TestEnvironment(Environment):
     sharp_test_image = "img2_sharp.jpg"
     test_images = [ "test_images/img0_dark.jpg",
                     "test_images/img1_blurry.jpg",
                     "test_images/%s" % sharp_test_image,
-                    "test_images/img3_blurry.jpg"]
+                    "test_images/img3_blurry.jpg",
+                    "test_images/img0_dark.jpg"]
 
     def __init__(self):
         Environment.__init__(self)
@@ -77,7 +84,10 @@ class TestEnvironment(Environment):
         print "DEBUG: 'captured' test image [%s] into file [%s]" % (next_test_image, file_name)
         return file_name
 
-    def wait_between_camera_captures(self):
+    def wait_between_idle_camera_captures(self):
+        pass
+
+    def wait_between_active_camera_captures(self):
         pass
 
     def started_collecting_images(self):
@@ -88,3 +98,6 @@ class TestEnvironment(Environment):
 
     def original_test_file_name(self, file_name):
         return self.test_file_names[os.path.basename(file_name)]
+
+    def expose_file_via_webserver(self, file_name):
+        pass
