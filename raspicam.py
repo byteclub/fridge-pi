@@ -19,7 +19,7 @@ class RaspiCameraConfig:
 
     def set_metering_mode(self, mm):
         if not mm in ALL_METERING_MODES:
-            raise Exception("Unknown metering mode specified: [%s]" % mm
+            raise Exception("Unknown metering mode specified: [%s]" % mm)
         self.metering_mode = mm
 
 
