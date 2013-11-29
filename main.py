@@ -21,11 +21,12 @@ def main(e, loop_forever = True):
             break
 
 def wait_for_dark_image():
+    logger.debug('Waiting for dark image')
     wait_for_image_that(is_dark)
     env.cleanup_temp_files
 
 def get_best_images():
-    logger.debug('Waiting for dark image')
+    logger.debug('Waiting for a non-dark image')
     best_img = wait_for_image_that(is_not_dark)
     logger.debug('Got dark image. Starting image selection')
     started = env.started_collecting_images()
