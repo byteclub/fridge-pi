@@ -18,7 +18,7 @@ class RaspiCameraConfig:
         self.set_metering_mode(mm)
 
     def set_metering_mode(self, mm):
-        if not mm in ALL_METERING_MODES:
+        if not mm in self.ALL_METERING_MODES:
             raise Exception("Unknown metering mode specified: [%s]" % mm)
         self.metering_mode = mm
 
@@ -30,7 +30,7 @@ class RaspiCamera:
     def capture_image_into_file(self, file_name, camconfig = None):
         if camconfig == None:
             comconfig = self.camconfig
-        cmd = RaspiStillCmdBuilder()
+        cmd = RaspistillCmdBuilder()
         cmd.take_picture_immediately()
         cmd.save_picture_to_file(file_name)
         cmd.use_metering_mode(camconfig.metering_mode)
