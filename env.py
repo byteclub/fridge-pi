@@ -42,6 +42,10 @@ class Environment:
     def expose_file_via_webserver(self, file_name):
         shutil.copy(file_name, "/home/pi/public_html/fridge.jpg")
 
+    def expose_directory_via_webserver(self, path):
+        shutil.rmtree(path, "/home/pi/public_html/fridge-pi")
+        shutil.copy(path, "/home/pi/public_html/fridge-pi")
+
     def started_collecting_images(self):
         return time.time()
 
