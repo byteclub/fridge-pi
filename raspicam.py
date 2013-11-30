@@ -41,8 +41,8 @@ class RaspiCamera:
         cmd.save_picture_to_file(file_name)
         if camconfig.metering_mode != None:
             cmd.use_metering_mode(camconfig.metering_mode)
-        if camconfig.rotation != None:
-            cmd.rotate_picture(camconfig.rotation)
+        if camconfig.rotation_degrees != None:
+            cmd.rotate_picture(camconfig.rotation_degrees)
         cmd.execute()
         if not os.path.exists(file_name):
             raise Exception("Called raspistill but can't find output file [%s]!" % file_name)

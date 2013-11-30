@@ -25,7 +25,7 @@ def take_pictures_and_make_html(temp_dir):
     for m in raspicam.RaspiCameraConfig.ALL_METERING_MODES:
         print("Taking picture with %s metering mode..." % m)
         fn = "%s/%s_image.jpg" % (temp_dir, m)
-        cam.capture_image_into_file(fn, raspicam.RaspiCameraConfig(mm = m))
+        cam.capture_image_into_file(fn, raspicam.RaspiCameraConfig(mm = m, rotation_degrees = 90))
         html.add_image_with_description(fn, "Image captured with '%s' metering mode:" % m)
     html.end()
 
