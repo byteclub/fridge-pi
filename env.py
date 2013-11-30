@@ -59,10 +59,10 @@ class Environment:
         return elapsed > 5*60
 
     def wait_between_idle_camera_captures(self):
-        time.sleep(5)
+        time.sleep(1)
 
     def wait_between_active_camera_captures(self):
-        time.sleep(1)
+        pass
 
 class TestEnvironment(Environment):
     sharp_test_image = "img2_sharp.jpg"
