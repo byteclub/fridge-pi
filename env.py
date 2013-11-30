@@ -4,6 +4,7 @@ import shutil
 import os.path
 import subprocess
 import raspicam
+import imgutil
 
 class Environment:
     temp_dir = "tmp"
