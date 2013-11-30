@@ -35,7 +35,7 @@ class RaspiCamera:
 
     def capture_image_into_file(self, file_name, camconfig = None):
         if camconfig == None:
-            comconfig = self.camconfig
+            camconfig = self.camconfig
         cmd = RaspistillCmdBuilder()
         cmd.take_picture_immediately()
         cmd.save_picture_to_file(file_name)
