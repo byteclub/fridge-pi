@@ -21,7 +21,7 @@ def main(e, loop_forever = True):
             break
 
 def wait_for_dark_image():
-    logger.debug('Waiting for dark image')
+    logger.debug('Waiting for a dark image')
     wait_for_image_that(is_dark)
     env.cleanup_temp_files
 

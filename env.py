@@ -3,6 +3,7 @@ import os
 import shutil
 import os.path
 import subprocess
+import raspicam
 
 class Environment:
     temp_dir = "tmp"
@@ -10,6 +11,10 @@ class Environment:
 
     def __init__(self):
         self.temp_file_counter = 0
+        camconfig = raspicam.RaspiCameraConfig()
+        camconfig.set_metering_mode(raspicam.RaspiCameraConfig.METERING_MODE_AVERAGE)
+        camconfig.set_rotation(90)
+        self.cam = raspicam.RaspiCamera(camconfig)
 
     def start(self):
         if not os.path.exists(self.temp_dir):
@@ -22,9 +27,7 @@ class Environment:
         return "%s/image_cnt%d_time%d.%s" % (self.temp_dir, self.temp_file_counter, int(time.time()), extension)
 
     def capture_camera_image_into(self, file_name):
-        subprocess.call(["/usr/bin/raspistill", "-t", "0", "-o", file_name])
-        if not os.path.exists(file_name):
-            raise Exception("Called raspistill but can't find output file [%s]!" % file_name)
+        self.cam.capture_image_into_file(file_name)
         return file_name
 
     def capture_camera_image_into_temp_file(self, extension = "jpg"):
@@ -56,7 +59,7 @@ class Environment:
         return elapsed > 5*60
 
     def wait_between_idle_camera_captures(self):
-        time.sleep(10)
+        time.sleep(5)
 
     def wait_between_active_camera_captures(self):
         time.sleep(1)
