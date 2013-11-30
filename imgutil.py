@@ -13,6 +13,11 @@ def compute_sharpness_value(img_gray):
 def read_img_gray(file_name):
     return cv2.imread(file_name, cv.CV_LOAD_IMAGE_GRAYSCALE)
 
+def rotate_image_file_90_degrees_right(file_name):
+    src = cv2.imread(file_name, 1)
+    dst = cv2.transpose(src)
+    cv2.imwrite(file_name, dst)
+
 class Image:
     def __init__(self, file_name):
         img_gray = read_img_gray(file_name)

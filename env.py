@@ -13,7 +13,6 @@ class Environment:
         self.temp_file_counter = 0
         camconfig = raspicam.RaspiCameraConfig()
         camconfig.set_metering_mode(raspicam.RaspiCameraConfig.METERING_MODE_AVERAGE)
-        camconfig.set_rotation(90)
         self.cam = raspicam.RaspiCamera(camconfig)
 
     def start(self):
@@ -39,6 +38,7 @@ class Environment:
             os.remove("%s/%s" % (self.temp_dir, f))
 
     def save_file_for_later(self, file_name):
+        imgutil.rotate_image_file_90_degrees_right(file_name)
         self.expose_file_via_webserver(file_name)
         shutil.move(file_name, self.save_dir)
 
