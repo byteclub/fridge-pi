@@ -23,7 +23,7 @@ def main(e, loop_forever = True):
 def wait_for_dark_image():
     logger.debug('Waiting for a dark image')
     wait_for_image_that(is_dark)
-    env.cleanup_temp_files
+    env.cleanup_temp_files()
 
 def get_best_images():
     logger.debug('Waiting for a non-dark image')
@@ -52,7 +52,7 @@ def save_images(images):
 
 def wait_for_image_that(meets_criteria):
     while(True):
-        env.cleanup_temp_files
+        env.cleanup_temp_files()
         img = Image(env.capture_camera_image_into_temp_file())
         if meets_criteria(img):
             return img
